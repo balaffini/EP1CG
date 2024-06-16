@@ -24,7 +24,6 @@ def draw_fan_blade(precision, radius):
 
 def draw_fan_arm():
     glColor3fv((1, 1, 1))
-    # glTranslatef(0, 0, -2)
     glBegin(GL_POLYGON)
     glVertex3f(0, 0, 0)
     glVertex3f(-0.7, -2, 0)
@@ -51,23 +50,24 @@ def draw_fan_blades_spinning():
         glRotatef(360 / fan_blades_count, 0, 0, 1)
     glColor3fv((0, 1, 1))
     glutSwapBuffers()
-    # glRotatef(1, 0, 0, 1)
-    # glRotatef(0.5, 0, 1, 0)
 
 
 def draw_blades_protection():
     glColor3fv((1, 0, 1))
-    # glRotatef(fan_body_rotation_angle, 0, 1, 0)
-    draw_circle(35, 1.22, GL_LINE_LOOP, 0)
-    draw_circle(35, 0.3, GL_POLYGON, .13)
+    outer_radius = 1.22
+    inner_radius = 0.3
+    inner_z = 0.13
+    outer_z = 0
+    draw_circle(35, outer_radius, GL_LINE_LOOP, 0)
+    draw_circle(35, inner_radius, GL_POLYGON, inner_z)
     glBegin(GL_LINES)
     lines = 15
     for i in range(lines):
         angle = 2 * math.pi * i / lines
-        x = 1.22 * math.cos(angle)
-        y = 1.22 * math.sin(angle)
-        glVertex3f(0, 0, .13)
-        glVertex3f(x, y, 0)
+        x = outer_radius * math.cos(angle)
+        y = outer_radius * math.sin(angle)
+        glVertex3f(0, 0, inner_z)
+        glVertex3f(x, y, outer_z)
     glEnd()
 
 
@@ -91,7 +91,6 @@ def draw_fan():
 
     glPushMatrix()
     glRotatef(fan_blades_rotation_angle, 0, 0, 1)
-    # glRotatef(fan_body_rotation_angle, 0, 1, 0)
     draw_fan_blades_spinning()
     glPopMatrix()
 
