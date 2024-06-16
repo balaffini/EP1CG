@@ -27,17 +27,17 @@ def draw_fan_arm():
     # glTranslatef(0, 0, -2)
     glBegin(GL_POLYGON)
     glVertex3f(0, 0, 0)
-    glVertex3f(-1, -2, 0)
-    glVertex3f(1, -2, 0)
+    glVertex3f(-0.7, -2, 0)
+    glVertex3f(0.7, -2, 0)
     glEnd()
 
 def draw_fan_base():
     glColor3fv((1, 1, 1))
     glBegin(GL_POLYGON)
-    glVertex3f(-2, -2, -1)
-    glVertex3f(2, -2, -1)
-    glVertex3f(2, -3, -1)
-    glVertex3f(-2, -3, -1)
+    glVertex3f(-1.5, -2, -1)
+    glVertex3f(1.5, -2, -1)
+    glVertex3f(1.5, -3, -1)
+    glVertex3f(-1.5, -3, -1)
     glEnd()
 
 
@@ -58,18 +58,26 @@ def draw_fan_blades_spinning():
 def draw_blades_protection():
     glColor3fv((1, 0, 1))
     # glRotatef(fan_body_rotation_angle, 0, 1, 0)
-    draw_circle(35, 1.22, GL_LINE_LOOP)
-    draw_circle(35, 0.3, GL_POLYGON)
+    draw_circle(35, 1.22, GL_LINE_LOOP, 0)
+    draw_circle(35, 0.3, GL_POLYGON, .13)
+    glBegin(GL_LINES)
+    lines = 15
+    for i in range(lines):
+        angle = 2 * math.pi * i / lines
+        x = 1.22 * math.cos(angle)
+        y = 1.22 * math.sin(angle)
+        glVertex3f(0, 0, .13)
+        glVertex3f(x, y, 0)
+    glEnd()
 
 
-
-def draw_circle(precision, radius, mode):
+def draw_circle(precision, radius, mode, z):
     glBegin(mode)
     for i in range(precision):
         angle = 2 * math.pi * i / precision
         x = radius * math.cos(angle)
         y = radius * math.sin(angle)
-        glVertex3f(x, y, 0)
+        glVertex3f(x, y, z)
     glEnd()
 
 def draw_fan():
