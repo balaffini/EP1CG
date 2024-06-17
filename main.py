@@ -9,16 +9,42 @@ fan_blades_rotation_angle = 0
 fan_body_rotation_angle = 0
 
 
-def draw_fan_blade(precision, radius):
-    glBegin(GL_POLYGON)
-    glVertex3f(0, 0, .3)
-    glVertex3f(1, 0.5, .1)
-    glVertex3f(1, -0.5, .3)
+def setup_lighting():
+    glEnable(GL_LIGHTING)
+
+    # Luz ambiente
+    glEnable(GL_LIGHT0)
+    ambient_light = [0.2, 0.2, 0.2, 1.0]
+    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_light)
+
+    # Luz direcional
+    glEnable(GL_LIGHT1)
+    directional_light = [0.5, 0.5, 0.5, 1.0]
+    light_position1 = [0.0, 5.0, 5.0, 0.0]  # Direcional
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, directional_light)
+    glLightfv(GL_LIGHT1, GL_POSITION, light_position1)
+
+    # Luz de ponto
+    glEnable(GL_LIGHT2)
+    point_light = [0.5, 0.5, 0.5, 1.0]
+    light_position2 = [2.0, 5.0, -2.0, 1.0]  # De ponto
+    glLightfv(GL_LIGHT2, GL_DIFFUSE, point_light)
+    glLightfv(GL_LIGHT2, GL_POSITION, light_position2)
+
+    glEnable(GL_COLOR_MATERIAL)
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE)
+
+    glShadeModel(GL_SMOOTH)  # Sombreamento de Gouraud
+    glEnable(GL_DEPTH_TEST)
+
+
+def draw_circle(precision, radius, mode, z):
+    glBegin(mode)
     for i in range(precision):
-        angle = 0.20 * math.pi * i / precision
+        angle = 2 * math.pi * i / precision
         x = radius * math.cos(angle)
         y = radius * math.sin(angle)
-        glVertex3f(x, y, .1)
+        glVertex3f(x, y, z)
     glEnd()
 
 
@@ -86,6 +112,19 @@ def draw_fan_base():
     glEnd()
 
 
+def draw_fan_blade(precision, radius):
+    glBegin(GL_POLYGON)
+    glVertex3f(0, 0, .3)
+    glVertex3f(1, 0.5, .1)
+    glVertex3f(1, -0.5, .3)
+    for i in range(precision):
+        angle = 0.20 * math.pi * i / precision
+        x = radius * math.cos(angle)
+        y = radius * math.sin(angle)
+        glVertex3f(x, y, .1)
+    glEnd()
+
+
 def draw_fan_blades_spinning():
     precision = 35
     radius = 1.1
@@ -124,22 +163,6 @@ def draw_blades_protection():
     glEnd()
 
 
-def draw_blades_back_protection():
-    glBegin(GL_LINES)
-    lines = 15
-    outer_radius = 1.22
-    inner_z = 0
-    outer_z = 0.1
-    for i in range(lines):
-        angle = 2 * math.pi * i / lines
-        x = outer_radius * math.cos(angle)
-        y = outer_radius * math.sin(angle)
-        glVertex3f(0, 0, -inner_z)
-        glVertex3f(x, y, outer_z)
-    glEnd()
-    draw_blade_holder()
-
-
 def draw_blade_holder():
     width = .04
     glColor3fv((1, 1, 1))
@@ -169,14 +192,20 @@ def draw_blade_holder():
     glEnd()
 
 
-def draw_circle(precision, radius, mode, z):
-    glBegin(mode)
-    for i in range(precision):
-        angle = 2 * math.pi * i / precision
-        x = radius * math.cos(angle)
-        y = radius * math.sin(angle)
-        glVertex3f(x, y, z)
+def draw_blades_back_protection():
+    glBegin(GL_LINES)
+    lines = 15
+    outer_radius = 1.22
+    inner_z = 0
+    outer_z = 0.1
+    for i in range(lines):
+        angle = 2 * math.pi * i / lines
+        x = outer_radius * math.cos(angle)
+        y = outer_radius * math.sin(angle)
+        glVertex3f(0, 0, -inner_z)
+        glVertex3f(x, y, outer_z)
     glEnd()
+    draw_blade_holder()
 
 
 def draw_fan():
@@ -222,6 +251,8 @@ def main():
     glTranslatef(0, 1, -6)
     glRotatef(10, 40, -200, 0)
 
+    setup_lighting()  # Configura a iluminação
+
     blades_velocity = 0
 
     crescendo = True
@@ -248,6 +279,10 @@ def main():
                     blades_velocity = 2
                 if event.key == pygame.K_3:
                     blades_velocity = 3
+                if event.key == pygame.K_4:
+                    blades_velocity = 4
+                if event.key == pygame.K_8:
+                    blades_velocity = 25
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 4:
                     glTranslatef(0, 0, 0.2)
@@ -271,6 +306,7 @@ def main():
                 crescendo = not crescendo
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
         draw_fan()
 
         pygame.display.flip()
