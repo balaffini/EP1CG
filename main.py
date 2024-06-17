@@ -219,12 +219,13 @@ def main():
     pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
 
     gluPerspective(45, (display[0] / display[1]), 0.1, 50.0)
-    glTranslatef(0.0, 1, -6)
+    glTranslatef(0, 1, -6)
     glRotatef(10, 40, -200, 0)
+
+    blades_velocity = 0
 
     crescendo = True
     rotation = 0.6
-
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -239,6 +240,14 @@ def main():
                     glTranslatef(0, -0.2, 0)
                 if event.key == pygame.K_DOWN:
                     glTranslatef(0, 0.2, 0)
+                if event.key == pygame.K_0:
+                    blades_velocity = 0
+                if event.key == pygame.K_1:
+                    blades_velocity = 1
+                if event.key == pygame.K_2:
+                    blades_velocity = 2
+                if event.key == pygame.K_3:
+                    blades_velocity = 3
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 4:
                     glTranslatef(0, 0, 0.2)
@@ -249,16 +258,17 @@ def main():
             glRotatef(mouse_move[0] * 0.1, 0.0, 1.0, 0.0)
 
         global fan_blades_rotation_angle
-        fan_blades_rotation_angle += 1
+        fan_blades_rotation_angle -= blades_velocity
 
         global fan_body_rotation_angle
-        is_in_angle = fan_body_rotation_angle < 70 if crescendo else fan_body_rotation_angle > -50
+        is_in_angle = fan_body_rotation_angle < 60 if crescendo else fan_body_rotation_angle > -60
 
-        if is_in_angle:
-            fan_body_rotation_angle += rotation
-        else:
-            rotation = -rotation
-            crescendo = not crescendo
+        if blades_velocity != 0:
+            if is_in_angle:
+                fan_body_rotation_angle += rotation
+            else:
+                rotation = -rotation
+                crescendo = not crescendo
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         draw_fan()
