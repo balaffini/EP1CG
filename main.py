@@ -10,21 +10,6 @@ fan_body_rotation_angle = 0
 blades_velocity = 0
 
 
-def setup_lighting():
-    glEnable(GL_LIGHTING)
-    glEnable(GL_LIGHT0)
-    ambient_light = [0.2, 0.2, 0.2, 1.0]
-    diffuse_light = [0.8, 0.8, 0.8, 1.0]
-    light_position = [4.0, 4.0, 4.0, 1.0]
-
-    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_light)
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse_light)
-    glLightfv(GL_LIGHT0, GL_POSITION, light_position)
-
-    glEnable(GL_COLOR_MATERIAL)
-    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE)
-
-
 def draw_circle(precision, radius, mode, z, y_offset=0.0):
     glBegin(mode)
     for i in range(precision):
@@ -208,6 +193,57 @@ def draw_knob():
     glEnd()
 
 
+# def draw_motor():
+#     radius = 1
+#     inner_z = -.5
+#     outer_z = -1.5
+#     precision = 50
+#     glBegin(GL_POLYGON)
+#     glColor3fv((1, 1, 1))
+#     flag = True
+#     for i in range(precision):
+#         angle = 2 * math.pi * i / precision
+#         x = radius * math.cos(angle)
+#         y = radius * math.sin(angle)
+#         glVertex3f(x, y, inner_z if flag else outer_z)
+#         glVertex3f(x, y, outer_z if flag else inner_z)
+#         flag = not flag
+#     glEnd()
+
+def draw_motor():
+    radius = 0.25
+    precision = 35
+    circle_pts = []
+    inner_z = 0
+    outer_z = -.5
+    for i in range(int(precision) + 1):
+        angle = 2 * math.pi * (i/precision)
+        x = radius * math.cos(angle)
+        y = radius * math.sin(angle)
+        pt = (x, y)
+        circle_pts.append(pt)
+    glBegin(GL_TRIANGLE_STRIP)
+    glColor(1, 1, 1)
+    for (x, y) in circle_pts:
+        glVertex(x, y, inner_z)
+        glVertex(x, y, outer_z)
+    glEnd()
+    draw_circle(precision, radius, GL_POLYGON, inner_z)
+    draw_circle(precision, radius, GL_POLYGON, outer_z)
+    glColor(0, 0, 0)
+    draw_circle(precision, radius, GL_LINE_LOOP, inner_z)
+    draw_circle(precision, radius, GL_LINE_LOOP, outer_z)
+    lines = 5
+    glBegin(GL_LINES)
+    for i in range(lines):
+        angle = 2 * math.pi * i / lines
+        x = radius * math.cos(angle)
+        y = radius * math.sin(angle)
+        glVertex3f(x, y, inner_z)
+        glVertex3f(x, y, outer_z)
+    glEnd()
+
+
 def draw_fan_blade(precision, radius):
     glBegin(GL_POLYGON)
     glColor3fv((1, 1, 1))
@@ -352,6 +388,10 @@ def draw_fan():
     glPopMatrix()
 
     glPushMatrix()
+    draw_motor()
+    glPopMatrix()
+
+    glPushMatrix()
     glRotatef(fan_body_rotation_angle, 0, 1, 0)
 
     glPushMatrix()
@@ -421,8 +461,6 @@ def main():
     glTranslatef(0, 1, -6)
     glRotatef(10, 40, -200, 0)
 
-    # setup_lighting()  # Configura a iluminação
-
     global blades_velocity
 
     crescendo = True
@@ -461,6 +499,7 @@ def main():
 
             mouse_move = pygame.mouse.get_rel()
             glRotatef(mouse_move[0] * 0.1, 0.0, 1.0, 0.0)
+            glRotatef(mouse_move[1] * 0.1, 1.0, 0.0, 0.0)
 
         global fan_blades_rotation_angle
         fan_blades_rotation_angle -= blades_velocity*2
