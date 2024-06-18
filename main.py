@@ -66,7 +66,6 @@ def draw_fan_arm():
     glVertex3f(0.7, -2, -.6)
     glVertex3f(0.7, -2, 0)
 
-
     glVertex3f(0, 0, 0)
     glVertex3f(0.7, -2, 0)
     glVertex3f(0, 0, 0)
@@ -178,37 +177,20 @@ def draw_knob():
         angle = 2 * math.pi * i / lines
         x = radius * math.cos(angle)
         y = radius * math.sin(angle)
-        glVertex3f(x, y-2.3, .55)
-        glVertex3f(x, y-2.3, .5)
+        glVertex3f(x, y - 2.3, .55)
+        glVertex3f(x, y - 2.3, .5)
     glEnd()
     glColor3fv((1, 1, 1))
     draw_circle(25, radius, GL_POLYGON, .55, -2.3)
     global blades_velocity
     glBegin(GL_LINES)
     glColor3fv((0, 0, 0))
-    x = -0.02 - radius/2 * math.cos(blades_velocity*.6)
-    y = 0.02 + radius/2 * math.sin(blades_velocity*.6)
+    x = -0.02 - radius / 2 * math.cos(blades_velocity * .6)
+    y = 0.02 + radius / 2 * math.sin(blades_velocity * .6)
     glVertex3f(x, y - 2.3, .55)
     glVertex3f(0, -2.3, .55)
     glEnd()
 
-
-# def draw_motor():
-#     radius = 1
-#     inner_z = -.5
-#     outer_z = -1.5
-#     precision = 50
-#     glBegin(GL_POLYGON)
-#     glColor3fv((1, 1, 1))
-#     flag = True
-#     for i in range(precision):
-#         angle = 2 * math.pi * i / precision
-#         x = radius * math.cos(angle)
-#         y = radius * math.sin(angle)
-#         glVertex3f(x, y, inner_z if flag else outer_z)
-#         glVertex3f(x, y, outer_z if flag else inner_z)
-#         flag = not flag
-#     glEnd()
 
 def draw_motor():
     radius = 0.25
@@ -217,7 +199,7 @@ def draw_motor():
     inner_z = 0
     outer_z = -.5
     for i in range(int(precision) + 1):
-        angle = 2 * math.pi * (i/precision)
+        angle = 2 * math.pi * (i / precision)
         x = radius * math.cos(angle)
         y = radius * math.sin(angle)
         pt = (x, y)
@@ -228,9 +210,27 @@ def draw_motor():
         glVertex(x, y, inner_z)
         glVertex(x, y, outer_z)
     glEnd()
-    draw_circle(precision, radius, GL_POLYGON, inner_z)
     draw_circle(precision, radius, GL_POLYGON, outer_z)
+    draw_circle(precision, radius, GL_POLYGON, inner_z)
+    glBegin(GL_POLYGON)
     glColor(0, 0, 0)
+    glVertex(.15, -.16, inner_z)
+    glVertex(.1, .16, inner_z)
+    glVertex(.13, .16, inner_z)
+    glVertex(.18, -.16, inner_z)
+    glEnd()
+    glBegin(GL_POLYGON)
+    glVertex(.02, -.16, inner_z)
+    glVertex(-.04, .16, inner_z)
+    glVertex(0, .16, inner_z)
+    glVertex(.06, -.16, inner_z)
+    glEnd()
+    glBegin(GL_POLYGON)
+    glVertex(-.1, -.16, inner_z)
+    glVertex(-.15, .16, inner_z)
+    glVertex(-.18, .16, inner_z)
+    glVertex(-.13, -.16, inner_z)
+    glEnd()
     draw_circle(precision, radius, GL_LINE_LOOP, inner_z)
     draw_circle(precision, radius, GL_LINE_LOOP, outer_z)
     lines = 5
@@ -240,42 +240,57 @@ def draw_motor():
         x = radius * math.cos(angle)
         y = radius * math.sin(angle)
         glVertex3f(x, y, inner_z)
+        glVertex3f(x, y, outer_z / 2)
+        glVertex3f(x, y, outer_z / 2 - .05)
         glVertex3f(x, y, outer_z)
     glEnd()
 
 
-def draw_fan_blade(precision, radius):
+def draw_fan_blade(precision):
     glBegin(GL_POLYGON)
     glColor3fv((1, 1, 1))
     glVertex3f(0, 0, .3)
-    glVertex3f(1, 0.5, .1)
-    glVertex3f(1, -0.5, .3)
-    for i in range(precision):
-        angle = 0.20 * math.pi * i / precision
-        x = radius * math.cos(angle)
-        y = radius * math.sin(angle)
-        glVertex3f(x, y, .1)
+    glVertex3f(.9, 0.5, .1)
+    glVertex3f(.9, -0.5, .3)
     glEnd()
-    glBegin(GL_LINES)
+
+    glBegin(GL_POLYGON)
+    z = .3
+    x_radius = .5
+    y_radius = .25
+    offset = .9
+    size = 18
+    for i in range(size):
+        angle = 2 * math.pi * i / (precision - 1)
+        x = x_radius * math.cos(angle)
+        y = y_radius * math.sin(angle)
+        glVertex3f(x, y + offset, z)
+        z -= .2 / (size - 1)
+    glEnd()
+
+    glBegin(GL_LINE_LOOP)
     glColor3fv((0, 0, 0))
     glVertex3f(0, 0, .3)
-    glVertex3f(1, 0.5, .1)
+    glVertex3f(.9, 0.5, .1)
     glVertex3f(0, 0, .3)
-    glVertex3f(1, -0.5, .3)
-    for i in range(precision):
-        angle = 0.20 * math.pi * i / precision
-        x = radius * math.cos(angle)
-        y = radius * math.sin(angle)
-        glVertex3f(x, y, .1)
+    glVertex3f(.9, -0.5, .3)
+    glEnd()
+    glBegin(GL_LINE_STRIP)
+    z = .3
+    for i in range(size):
+        angle = 2 * math.pi * i / (precision - 1)
+        x = x_radius * math.cos(angle)
+        y = y_radius * math.sin(angle)
+        glVertex3f(x, y + offset, z)
+        z -= .2 / (size - 1)
     glEnd()
 
 
 def draw_fan_blades_spinning():
     precision = 35
-    radius = 1.1
     fan_blades_count = 4
     for _ in range(fan_blades_count):
-        draw_fan_blade(precision, radius)
+        draw_fan_blade(precision)
         glRotatef(360 / fan_blades_count, 0, 0, 1)
     glutSwapBuffers()
 
@@ -379,6 +394,8 @@ def draw_fan():
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
+    draw_room()
+
     glPushMatrix()
     draw_fan_base()
     glPopMatrix()
@@ -412,10 +429,8 @@ def draw_fan():
 
 
 def draw_room():
-    glColor3f(0.7, 0.7, 0.7)  # Light grey color for the walls
+    glColor3f(0.9, 0.9, 0.9)
     glBegin(GL_QUADS)
-    glColor3f(0.7, 0.7, 0.7)
-
     # Floor
     glVertex3f(-5, -2.65, 5)
     glVertex3f(5, -2.65, 5)
@@ -445,7 +460,55 @@ def draw_room():
     glVertex3f(5, -2.65, -5)
     glVertex3f(5, 5, -5)
     glVertex3f(5, 5, 5)
+    glEnd()
 
+    glBegin(GL_LINES)
+    glColor3f(0, 0, 0)
+    # Floor
+    glVertex3f(-5, -2.65, 5)
+    glVertex3f(5, -2.65, 5)
+
+    glVertex3f(5, -2.65, -5)
+    glVertex3f(-5, -2.65, -5)
+
+    glVertex3f(-5, 5, -5)
+    glVertex3f(-5, -2.65, -5)
+
+    glVertex3f(5, 5, 5)
+    glVertex3f(5, -2.65, 5)
+
+    glVertex3f(5, 5, -5)
+    glVertex3f(5, -2.65, -5)
+
+    glVertex3f(-5, 5, 5)
+    glVertex3f(-5, -2.65, 5)
+
+    glVertex3f(-5, 5, 5)
+    glVertex3f(-5, -2.65, 5)
+
+    glVertex3f(-5, 5, 5)
+    glVertex3f(5, 5, 5)
+
+    glVertex3f(5, 5, -5)
+    glVertex3f(-5, 5, -5)
+
+    glVertex3f(-5, -2.65, -5)
+    glVertex3f(5, -2.65, -5)
+
+    glVertex3f(5, 5, -5)
+    glVertex3f(-5, 5, -5)
+
+    glVertex3f(-5, -2.65, 5)
+    glVertex3f(-5, -2.65, -5)
+
+    glVertex3f(-5, 5, -5)
+    glVertex3f(-5, 5, 5)
+
+    glVertex3f(5, -2.65, 5)
+    glVertex3f(5, -2.65, -5)
+
+    glVertex3f(5, 5, -5)
+    glVertex3f(5, 5, 5)
     glEnd()
 
 
@@ -502,7 +565,7 @@ def main():
             glRotatef(mouse_move[1] * 0.1, 1.0, 0.0, 0.0)
 
         global fan_blades_rotation_angle
-        fan_blades_rotation_angle -= blades_velocity*2
+        fan_blades_rotation_angle -= blades_velocity * 5
 
         global fan_body_rotation_angle
         is_in_angle = fan_body_rotation_angle < 60 if crescendo else fan_body_rotation_angle > -60
@@ -516,10 +579,7 @@ def main():
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
-        draw_room()
-
         glPushMatrix()
-        glTranslatef(0.0, -0.5, 0.0)  # Position the fan on the table
         draw_fan()
         glPopMatrix()
 
