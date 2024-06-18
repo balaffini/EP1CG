@@ -10,6 +10,13 @@ fan_body_rotation_angle = 0
 blades_velocity = 0
 
 
+def draw_2d_circle(precision, radius, z, y_offset=0.0):
+    glColor3fv((1, 1, 1))
+    draw_circle(precision, radius, GL_POLYGON, z, y_offset)
+    glColor3fv((0, 0, 0))
+    draw_circle(precision, radius, GL_LINE_LOOP, z, y_offset)
+
+
 def draw_circle(precision, radius, mode, z, y_offset=0.0):
     glBegin(mode)
     for i in range(precision):
@@ -20,157 +27,96 @@ def draw_circle(precision, radius, mode, z, y_offset=0.0):
     glEnd()
 
 
-def draw_fan_arm():
+def draw_rectangle(x1, x2, y1, y2, z1, z2):
+    glColor3fv((1, 1, 1))
+    # front, back, top, bottom
+    glBegin(GL_POLYGON)
+    glVertex3f(x1, y1, z1)
+    glVertex3f(x2, y1, z1)
+    glVertex3f(x2, y2, z2)
+    glVertex3f(x1, y2, z2)
+    glEnd()
+    # sides
+    glBegin(GL_POLYGON)
+    glVertex3f(x1, y2, z2)
+    glVertex3f(x1, y1, z2)
+    glVertex3f(x1, y1, z1)
+    glVertex3f(x1, y2, z1)
+    glEnd()
+    # lines
+    glColor3fv((0, 0, 0))
+    glBegin(GL_LINES)
+    glVertex3f(x1, y1, z1)
+    glVertex3f(x2, y1, z1)
+
+    glVertex3f(x2, y1, z1)
+    glVertex3f(x2, y2, z1)
+
+    glVertex3f(x2, y2, z1)
+    glVertex3f(x1, y2, z1)
+
+    glVertex3f(x1, y2, z1)
+    glVertex3f(x1, y1, z1)
+
+    glVertex3f(x1, y1, z1)
+    glVertex3f(x1, y1, z2)
+
+    glVertex3f(x1, y1, z2)
+    glVertex3f(x1, y2, z2)
+
+    glVertex3f(x1, y2, z2)
+    glVertex3f(x1, y2, z1)
+
+    glVertex3f(x1, y1, z2)
+    glVertex3f(x2, y1, z2)
+
+    glVertex3f(x2, y1, z2)
+    glVertex3f(x2, y1, z1)
+    glEnd()
+
+
+def draw_triangle(origin, x1, x2, y, z1, z2):
     glColor3fv((1, 1, 1))
     glBegin(GL_POLYGON)
-    glVertex3f(0, 0, 0)
-    glVertex3f(0.7, -2, 0)
-    glVertex3f(-0.7, -2, 0)
+    glVertex3f(origin[0], origin[1], origin[2])
+    glVertex3f(x1, y, z1)
+    glVertex3f(x2, y, z2)
     glEnd()
-    glBegin(GL_POLYGON)
-    glVertex3f(0, 0, 0)
-    glVertex3f(0.7, -2, -.6)
-    glVertex3f(0.7, -2, 0)
-    glEnd()
-    glBegin(GL_POLYGON)
-    glVertex3f(0, 0, 0)
-    glVertex3f(0.7, -2, -.6)
-    glVertex3f(-0.7, -2, -.6)
-    glEnd()
-    glBegin(GL_POLYGON)
-    glVertex3f(0, 0, 0)
-    glVertex3f(-0.7, -2, 0)
-    glVertex3f(-0.7, -2, -.6)
-    glEnd()
-
-    glBegin(GL_LINES)
     glColor3fv((0, 0, 0))
-    glVertex3f(0, 0, 0)
-    glVertex3f(-0.7, -2, 0)
-    glVertex3f(0, 0, 0)
-    glVertex3f(-0.7, -2, -.6)
-    glVertex3f(-0.7, -2, 0)
-    glVertex3f(-0.7, -2, -.6)
-
-    glVertex3f(0, 0, 0)
-    glVertex3f(0.7, -2, -.6)
-    glVertex3f(0, 0, 0)
-    glVertex3f(-0.7, -2, -.6)
-    glVertex3f(0.7, -2, -.6)
-    glVertex3f(-0.7, -2, -.6)
-
-    glVertex3f(0, 0, 0)
-    glVertex3f(0.7, -2, -.6)
-    glVertex3f(0, 0, 0)
-    glVertex3f(0.7, -2, 0)
-    glVertex3f(0.7, -2, -.6)
-    glVertex3f(0.7, -2, 0)
-
-    glVertex3f(0, 0, 0)
-    glVertex3f(0.7, -2, 0)
-    glVertex3f(0, 0, 0)
-    glVertex3f(-0.7, -2, 0)
-    glVertex3f(0.7, -2, 0)
-    glVertex3f(-0.7, -2, 0)
+    glBegin(GL_LINES)
+    glVertex3f(origin[0], origin[1], origin[2])
+    glVertex3f(x1, y, z1)
+    glVertex3f(origin[0], origin[1], origin[2])
+    glVertex3f(x2, y, z2)
+    glVertex3f(x1, y, z1)
+    glVertex3f(x2, y, z2)
     glEnd()
+
+
+def draw_fan_arm():
+    origin = (0, 0, 0)
+    draw_triangle(origin, -0.7, 0.7, -2, -.6, -.6)  # back
+    draw_triangle(origin, -0.7, -0.7, -2, 0, -.6)  # left
+    draw_triangle(origin, 0.7, 0.7, -2, -.6, 0)  # right
+    draw_triangle(origin, -0.7, 0.7, -2, 0, 0)  # front
 
 
 def draw_fan_base():
-    glColor3fv((1, 1, 1))
-    glBegin(GL_POLYGON)
-    glVertex3f(-1, -2, -1)
-    glVertex3f(1, -2, -1)
-    glVertex3f(1, -2.65, -1)
-    glVertex3f(-1, -2.65, -1)
-    glEnd()
-    glBegin(GL_POLYGON)
-    glVertex3f(-1, -2, .5)
-    glVertex3f(1, -2, .5)
-    glVertex3f(1, -2.65, .5)
-    glVertex3f(-1, -2.65, .5)
-    glEnd()
-    glBegin(GL_POLYGON)
-    glVertex3f(1, -2, -1)
-    glVertex3f(1, -2, .5)
-    glVertex3f(-1, -2, .5)
-    glVertex3f(-1, -2, -1)
-    glEnd()
-    glBegin(GL_POLYGON)
-    glVertex3f(-1, -2, -1)
-    glVertex3f(-1, -2, .5)
-    glVertex3f(-1, -2.65, .5)
-    glVertex3f(-1, -2.65, -1)
-    glEnd()
-    glBegin(GL_POLYGON)
-    glVertex3f(1, -2, -1)
-    glVertex3f(1, -2, .5)
-    glVertex3f(1, -2.65, .5)
-    glVertex3f(1, -2.65, -1)
-    glEnd()
-    glBegin(GL_POLYGON)
-    glVertex3f(1, -2.65, -1)
-    glVertex3f(1, -2.65, .5)
-    glVertex3f(-1, -2.65, .5)
-    glVertex3f(-1, -2.65, -1)
-    glEnd()
-    glBegin(GL_LINES)
-    glColor3fv((0, 0, 0))
-    glVertex3f(-1, -2, -1)
-    glVertex3f(1, -2, -1)
-
-    glVertex3f(1, -2.65, -1)
-    glVertex3f(-1, -2.65, -1)
-
-    glVertex3f(-1, -2, .5)
-    glVertex3f(1, -2, .5)
-
-    glVertex3f(1, -2.65, .5)
-    glVertex3f(-1, -2.65, .5)
-
-    glVertex3f(1, -2.65, .5)
-    glVertex3f(1, -2, .5)
-
-    glVertex3f(1, -2.65, -1)
-    glVertex3f(1, -2, -1)
-
-    glVertex3f(-1, -2.65, .5)
-    glVertex3f(-1, -2, .5)
-
-    glVertex3f(-1, -2.65, -1)
-    glVertex3f(-1, -2, -1)
-
-    glVertex3f(1, -2, -1)
-    glVertex3f(1, -2, .5)
-
-    glVertex3f(-1, -2, .5)
-    glVertex3f(-1, -2, -1)
-
-    glVertex3f(-1, -2, -1)
-    glVertex3f(-1, -2, .5)
-
-    glVertex3f(-1, -2.65, .5)
-    glVertex3f(-1, -2.65, -1)
-
-    glVertex3f(1, -2, -1)
-    glVertex3f(1, -2, .5)
-
-    glVertex3f(1, -2.65, .5)
-    glVertex3f(1, -2.65, -1)
-
-    glVertex3f(1, -2.65, -1)
-    glVertex3f(1, -2.65, .5)
-
-    glVertex3f(-1, -2.65, .5)
-    glVertex3f(-1, -2.65, -1)
-    glEnd()
+    draw_rectangle(-1, 1, -2.65, -2.65, -1, .5)  # bottom
+    draw_rectangle(-1, 1, -2, -2.65, -1, -1)  # back
+    draw_rectangle(-1, -1, -2, -2.65, -1, .5)  # left
+    draw_rectangle(-1, 1, -2, -2, -1, .5)  # top
+    draw_rectangle(1, 1, -2, -2.65, -1, .5)  # right
+    draw_rectangle(-1, 1, -2, -2.65, .5, .5)  # front
     draw_knob()
 
 
 def draw_knob():
     radius = 0.15
-    glColor3fv((0, 0, 0))
-    draw_circle(25, radius, GL_LINE_LOOP, .55, -2.3)
-    draw_circle(25, radius, GL_LINE_LOOP, .5, -2.3)
+    # back
+    draw_2d_circle(25, radius, .5, -2.3)
+
+    # hashes on the side
     lines = 20
     glBegin(GL_LINES)
     for i in range(lines):
@@ -180,8 +126,11 @@ def draw_knob():
         glVertex3f(x, y - 2.3, .55)
         glVertex3f(x, y - 2.3, .5)
     glEnd()
-    glColor3fv((1, 1, 1))
-    draw_circle(25, radius, GL_POLYGON, .55, -2.3)
+
+    # front
+    draw_2d_circle(25, radius, .55, -2.3)
+
+    # velocity marker
     global blades_velocity
     glBegin(GL_LINES)
     glColor3fv((0, 0, 0))
@@ -198,6 +147,12 @@ def draw_motor():
     circle_pts = []
     inner_z = 0
     outer_z = -.5
+
+    # back
+    draw_2d_circle(precision, radius, outer_z)
+
+    # motor cylinder
+    # https://stackoverflow.com/questions/41912261/pyopengl-creating-a-cylinder-without-using-glucylinder-function
     for i in range(int(precision) + 1):
         angle = 2 * math.pi * (i / precision)
         x = radius * math.cos(angle)
@@ -210,8 +165,25 @@ def draw_motor():
         glVertex(x, y, inner_z)
         glVertex(x, y, outer_z)
     glEnd()
-    draw_circle(precision, radius, GL_POLYGON, outer_z)
-    draw_circle(precision, radius, GL_POLYGON, inner_z)
+
+    # lines to show depth
+    lines = 5
+    glBegin(GL_LINES)
+    glColor(0, 0, 0)
+    for i in range(lines):
+        angle = 2 * math.pi * i / lines
+        x = radius * math.cos(angle)
+        y = radius * math.sin(angle)
+        glVertex3f(x, y, inner_z)
+        glVertex3f(x, y, outer_z / 2)
+        glVertex3f(x, y, outer_z / 2 - .05)
+        glVertex3f(x, y, outer_z)
+    glEnd()
+
+    # front
+    draw_2d_circle(precision, radius, inner_z)
+
+    # ventilation
     glBegin(GL_POLYGON)
     glColor(0, 0, 0)
     glVertex(.15, -.16, inner_z)
@@ -231,30 +203,27 @@ def draw_motor():
     glVertex(-.18, .16, inner_z)
     glVertex(-.13, -.16, inner_z)
     glEnd()
-    draw_circle(precision, radius, GL_LINE_LOOP, inner_z)
-    draw_circle(precision, radius, GL_LINE_LOOP, outer_z)
-    lines = 5
-    glBegin(GL_LINES)
-    for i in range(lines):
-        angle = 2 * math.pi * i / lines
-        x = radius * math.cos(angle)
-        y = radius * math.sin(angle)
-        glVertex3f(x, y, inner_z)
-        glVertex3f(x, y, outer_z / 2)
-        glVertex3f(x, y, outer_z / 2 - .05)
-        glVertex3f(x, y, outer_z)
-    glEnd()
 
 
 def draw_fan_blade(precision):
-    glBegin(GL_POLYGON)
+    # triangulo da helice
     glColor3fv((1, 1, 1))
+    glBegin(GL_POLYGON)
     glVertex3f(0, 0, .3)
     glVertex3f(.9, 0.5, .1)
     glVertex3f(.9, -0.5, .3)
     glEnd()
+    glBegin(GL_LINE_LOOP)
+    glColor3fv((0, 0, 0))
+    glVertex3f(0, 0, .3)
+    glVertex3f(.9, 0.5, .1)
+    glVertex3f(0, 0, .3)
+    glVertex3f(.9, -0.5, .3)
+    glEnd()
 
+    # curvatura da ponta
     glBegin(GL_POLYGON)
+    glColor3fv((1, 1, 1))
     z = .3
     x_radius = .5
     y_radius = .25
@@ -267,15 +236,8 @@ def draw_fan_blade(precision):
         glVertex3f(x, y + offset, z)
         z -= .2 / (size - 1)
     glEnd()
-
-    glBegin(GL_LINE_LOOP)
-    glColor3fv((0, 0, 0))
-    glVertex3f(0, 0, .3)
-    glVertex3f(.9, 0.5, .1)
-    glVertex3f(0, 0, .3)
-    glVertex3f(.9, -0.5, .3)
-    glEnd()
     glBegin(GL_LINE_STRIP)
+    glColor3fv((0, 0, 0))
     z = .3
     for i in range(size):
         angle = 2 * math.pi * i / (precision - 1)
@@ -300,9 +262,11 @@ def draw_blades_protection():
     inner_radius = 0.3
     inner_z = 0.43
     outer_z = .3
+    # outer rings
     draw_circle(35, outer_radius, GL_LINE_LOOP, .1)
     draw_circle(35, outer_radius, GL_LINE_LOOP, .2)
     draw_circle(35, outer_radius, GL_LINE_LOOP, .3)
+    # grill
     glBegin(GL_LINES)
     lines = 15
     for i in range(lines):
@@ -318,61 +282,20 @@ def draw_blades_protection():
         glVertex3f(x, y, .1)
         glVertex3f(x, y, .3)
     glEnd()
-    glColor3fv((1, 1, 1))
-    draw_circle(35, inner_radius, GL_POLYGON, inner_z)
-    glColor3fv((0, 0, 0))
-    draw_circle(35, inner_radius, GL_LINE_LOOP, inner_z)
+    # brand shield
+    draw_2d_circle(35, inner_radius, inner_z)
 
 
 def draw_blade_holder():
     width = .04
-    glColor3fv((1, 1, 1))
-    glBegin(GL_POLYGON)
-    glVertex3f(-width, -width, 0)
-    glVertex3f(-width, -width, 0.43)
-    glVertex3f(width, -width, 0.43)
-    glVertex3f(width, -width, 0)
-    glEnd()
-    glBegin(GL_POLYGON)
-    glVertex3f(width, width, 0)
-    glVertex3f(width, width, 0.43)
-    glVertex3f(-width, width, 0.43)
-    glVertex3f(-width, width, 0)
-    glEnd()
-    glBegin(GL_POLYGON)
-    glVertex3f(-width, -width, 0)
-    glVertex3f(-width, -width, 0.43)
-    glVertex3f(-width, width, 0.43)
-    glVertex3f(-width, width, 0)
-    glEnd()
-    glBegin(GL_POLYGON)
-    glVertex3f(width, width, 0)
-    glVertex3f(width, width, 0.43)
-    glVertex3f(width, -width, 0.43)
-    glVertex3f(width, -width, 0)
-    glEnd()
-    glBegin(GL_LINES)
-    glColor3fv((0, 0, 0))
-    glVertex3f(-width, -width, 0)
-    glVertex3f(-width, -width, 0.43)
-    glVertex3f(width, -width, 0.43)
-    glVertex3f(width, -width, 0)
-    glVertex3f(width, width, 0)
-    glVertex3f(width, width, 0.43)
-    glVertex3f(-width, width, 0.43)
-    glVertex3f(-width, width, 0)
-    glVertex3f(-width, -width, 0)
-    glVertex3f(-width, -width, 0.43)
-    glVertex3f(-width, width, 0.43)
-    glVertex3f(-width, width, 0)
-    glVertex3f(width, width, 0)
-    glVertex3f(width, width, 0.43)
-    glVertex3f(width, -width, 0.43)
-    glVertex3f(width, -width, 0)
-    glEnd()
+    draw_rectangle(-width, -width, width, -width, 0, 0.43)  # left
+    draw_rectangle(-width, width, -width, -width, 0, 0.43)  # bottom
+    draw_rectangle(-width, width, width, width, 0, 0.43)  # top
+    draw_rectangle(width, width, width, -width, 0, 0.43)  # right
 
 
 def draw_blades_back_protection():
+    # back grill
     glBegin(GL_LINES)
     lines = 15
     outer_radius = 1.22
@@ -385,6 +308,7 @@ def draw_blades_back_protection():
         glVertex3f(0, 0, -inner_z)
         glVertex3f(x, y, outer_z)
     glEnd()
+    # little thing that connects the motor to the blades
     draw_blade_holder()
 
 
