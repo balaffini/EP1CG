@@ -75,7 +75,7 @@ def draw_rectangle(x1, x2, y1, y2, z1, z2):
     glEnd()
 
 
-def draw_piramid_triangle(origin, x1, x2, y, z1, z2):
+def draw_pyramid_triangle(origin, x1, x2, y, z1, z2):
     glColor3fv((1, 1, 1))
     glBegin(GL_POLYGON)
     glVertex3f(origin[0], origin[1], origin[2])
@@ -95,10 +95,10 @@ def draw_piramid_triangle(origin, x1, x2, y, z1, z2):
 
 def draw_fan_arm():
     origin = (0, -.1, 0)
-    draw_piramid_triangle(origin, -0.7, 0.7, -2, -.6, -.6)  # back
-    draw_piramid_triangle(origin, -0.7, -0.7, -2, 0, -.6)  # left
-    draw_piramid_triangle(origin, 0.7, 0.7, -2, -.6, 0)  # right
-    draw_piramid_triangle(origin, -0.7, 0.7, -2, 0, 0)  # front
+    draw_pyramid_triangle(origin, -0.7, 0.7, -2, -.6, -.6)  # back
+    draw_pyramid_triangle(origin, -0.7, -0.7, -2, 0, -.6)  # left
+    draw_pyramid_triangle(origin, 0.7, 0.7, -2, -.6, 0)  # right
+    draw_pyramid_triangle(origin, -0.7, 0.7, -2, 0, 0)  # front
 
 
 def draw_fan_base():
@@ -222,6 +222,7 @@ def draw_fan_blade(precision):
     glEnd()
 
     # curvatura da ponta
+    # https://community.khronos.org/t/how-to-draw-an-oval/13428
     glBegin(GL_POLYGON)
     glColor3fv((1, 1, 1))
     z = .3
