@@ -75,7 +75,7 @@ def draw_rectangle(x1, x2, y1, y2, z1, z2):
     glEnd()
 
 
-def draw_triangle(origin, x1, x2, y, z1, z2):
+def draw_piramid_triangle(origin, x1, x2, y, z1, z2):
     glColor3fv((1, 1, 1))
     glBegin(GL_POLYGON)
     glVertex3f(origin[0], origin[1], origin[2])
@@ -94,11 +94,11 @@ def draw_triangle(origin, x1, x2, y, z1, z2):
 
 
 def draw_fan_arm():
-    origin = (0, 0, 0)
-    draw_triangle(origin, -0.7, 0.7, -2, -.6, -.6)  # back
-    draw_triangle(origin, -0.7, -0.7, -2, 0, -.6)  # left
-    draw_triangle(origin, 0.7, 0.7, -2, -.6, 0)  # right
-    draw_triangle(origin, -0.7, 0.7, -2, 0, 0)  # front
+    origin = (0, -.1, 0)
+    draw_piramid_triangle(origin, -0.7, 0.7, -2, -.6, -.6)  # back
+    draw_piramid_triangle(origin, -0.7, -0.7, -2, 0, -.6)  # left
+    draw_piramid_triangle(origin, 0.7, 0.7, -2, -.6, 0)  # right
+    draw_piramid_triangle(origin, -0.7, 0.7, -2, 0, 0)  # front
 
 
 def draw_fan_base():
@@ -329,11 +329,11 @@ def draw_fan():
     glPopMatrix()
 
     glPushMatrix()
-    draw_motor()
-    glPopMatrix()
+    glRotatef(fan_body_rotation_angle, 0, 1, 0)
 
     glPushMatrix()
-    glRotatef(fan_body_rotation_angle, 0, 1, 0)
+    draw_motor()
+    glPopMatrix()
 
     glPushMatrix()
     draw_blades_back_protection()
@@ -445,12 +445,13 @@ def main():
     glClear(GL_COLOR_BUFFER_BIT)
 
     gluPerspective(45, (display[0] / display[1]), 0.1, 50.0)
-    glTranslatef(0, 1, -6)
-    glRotatef(10, 40, -200, 0)
+    glTranslatef(-.1, .8, -6)
+    glRotatef(17, 0, -1, 0)
+    glRotatef(13, 1, 0, 0)
 
     global blades_velocity
 
-    crescendo = True
+    rotation_cycle = True
     rotation = 0.6
     while True:
         for event in pygame.event.get():
@@ -458,14 +459,6 @@ def main():
                 pygame.quit()
                 quit()
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RIGHT:
-                    glTranslatef(-0.2, 0, 0)
-                if event.key == pygame.K_LEFT:
-                    glTranslatef(0.2, 0, 0)
-                if event.key == pygame.K_UP:
-                    glTranslatef(0, -0.2, 0)
-                if event.key == pygame.K_DOWN:
-                    glTranslatef(0, 0.2, 0)
                 if event.key == pygame.K_0:
                     blades_velocity = 0
                 if event.key == pygame.K_1:
@@ -476,30 +469,19 @@ def main():
                     blades_velocity = 3
                 if event.key == pygame.K_4:
                     blades_velocity = 4
-                if event.key == pygame.K_8:
-                    blades_velocity = 25
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 4:
-                    glTranslatef(0, 0, 0.2)
-                if event.button == 5:
-                    glTranslatef(0, 0, -0.2)
-
-            mouse_move = pygame.mouse.get_rel()
-            glRotatef(mouse_move[0] * 0.1, 0.0, 1.0, 0.0)
-            glRotatef(mouse_move[1] * 0.1, 1.0, 0.0, 0.0)
 
         global fan_blades_rotation_angle
         fan_blades_rotation_angle -= blades_velocity * 5
 
         global fan_body_rotation_angle
-        is_in_angle = fan_body_rotation_angle < 60 if crescendo else fan_body_rotation_angle > -60
+        is_in_angle = fan_body_rotation_angle < 50 if rotation_cycle else fan_body_rotation_angle > -50
 
         if blades_velocity != 0:
             if is_in_angle:
                 fan_body_rotation_angle += rotation
             else:
                 rotation = -rotation
-                crescendo = not crescendo
+                rotation_cycle = not rotation_cycle
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
